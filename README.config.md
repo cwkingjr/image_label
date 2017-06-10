@@ -4,7 +4,7 @@ These are the default configuration settings that will be used if nothing is pro
 
 - text = "Default Insertion Text"
 - color = "red" # picked from list below
-- size = 150 # size the text will be printed
+- size = 100 # size the text will be printed
 - offset_LR = 50 # font points from edge of left and right of image
 - offset_TB = 50 # font points from edge of top and bottom of image
 - location = "TL" # Top Left of image
