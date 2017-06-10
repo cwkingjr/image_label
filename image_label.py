@@ -10,11 +10,12 @@ import sys
 config = configparser.ConfigParser()
 
 config['default'] = {
-    'text' : 'Default Insertion Text',
+    'text' : 'DEFAULT TEXT',
     'color' : 'red',
-    'size' : 150,
-    'offset' : 50,
-    'location' : 'NW',
+    'size' : 100,
+    'offset_LR' : 50,
+    'offset_TB' : 50,
+    'location' : 'TL',
     'font_file' : './open-sans/OpenSans-Bold.ttf'
 }
 
@@ -29,7 +30,7 @@ colors = {
 }
 
 # acceptable location values
-locations = "N NE E SE S SW W NW".split()
+locations = "T TR R BR B BL L TL".split()
 
 config.read('config.ini')
 
@@ -37,44 +38,49 @@ config.read('config.ini')
 text = config['default']['text']
 size = int(config['default']['size'])
 font_file = config['default']['font_file']
-offset = int(config['default']['offset'])
+offset_TB = int(config['default']['offset_TB'])
+offset_LR = int(config['default']['offset_LR'])
 color = config['default']['color']
 location = config['default']['location']
 
-# temp for testing
-location = 'NE'
-
-# validations
 if not location in locations:
     print('Location choice of {} is not among acceptable values of {}'.format(location, locations))
     sys.exit(1)
 
 img = Image.open("sample_in.jpg")
+image_width, image_height = img.size
 draw = ImageDraw.Draw(img)
 font = ImageFont.truetype(font_file, size)
+text_width, text_height  = draw.textsize(text, font=font)
 
-width, height = img.size
-#print('image width', width)
-#print('image height', height)
+#print('text width', text_width)
+#print('text height', text_height)
+#print('image width', image_width)
+#print('image height', image_height)
 
-# TODO determine size of text to be printed and deduct that from x,y
-# to allow space for the text when on the right side of the drawing
+if (((offset_LR * 2) + text_width) > image_width):
+    print('offset_LR on each side plus text width is too large to fit on this image')
+    sys.exit(1)
+    
+if (((offset_TB * 2) + text_height) > image_height):
+    print('offset_TB on top and bottom, plus text height is too large to fit on this image')
+    sys.exit(1)
 
-# establish print location x coordinate
-if location in ['NW', 'W', 'SW']:
-    x = offset
-elif location in ['N', 'S']:
-    x = width / 2
-elif location in ['NE', 'E', 'SE']:
-    x = width - offset
+# establish print location x
+if location in ['TL', 'L', 'BL']:
+    x = offset_LR
+elif location in ['T', 'B']:
+    x = (image_width - text_width) / 2
+elif location in ['TR', 'R', 'BR']:
+    x = image_width - (text_width + offset_LR)
 
-# establish print location y coordinate
-if location in ['NW', 'N', 'NE']:
-    y = offset
-elif location in ['W', 'E']:
-    y = height / 2
-elif location in ['SW', 'S', 'SE']:
-    y = height - offset
+# establish print location y
+if location in ['TL', 'T', 'TR']:
+    y = offset_TB
+elif location in ['L', 'R']:
+    y = (image_height - text_height) / 2
+elif location in ['BL', 'B', 'BR']:
+    y = image_height - (text_height + offset_TB)
 
 draw.text((x, y), text, colors[color], font=font)
 img.save('sample_out.jpg')
