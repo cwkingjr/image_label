@@ -18,7 +18,7 @@ Settings should cover these items:
 - True Type Font file location
 - Font size (12, 14, 16, etc)
 - Text (what text to insert)
-- Text location by compass heading (N, NW, NE, S, SW, SE, E, W)
+- Text location by compass heading (N, NE, E, SE, S, SW, W, NW)
 - Text offset (pixels from edge)
 - Text color
 
@@ -31,3 +31,4 @@ Things that may need to be considered / added later:
 The idea is that a user would be able to invoke something like this on the command line:
 
     $image_label --text="TOP" --color=red --offset=5 --size=16 --location=NW image1.jpg image2.jpg
+    $image_label --setting=top image1.jpg image2.jpg
