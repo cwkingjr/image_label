@@ -9,15 +9,6 @@ from PIL import ImageDraw
 import sys
 
 config = configparser.ConfigParser()
-config['default'] = {
-    'font_color' : 'red',
-    'font_file' : './open-sans/OpenSans-Bold.ttf',
-    'font_size' : 100,
-    'label_location' : 'TL',
-    'label_offset_LR' : 50,
-    'label_offset_TB' : 50,
-    'label_text' : 'DEFAULT TEXT'
-}
 
 # acceptable location values
 # top, top right, right, bottom right, etc
@@ -46,8 +37,8 @@ parser.add_argument('--fontfile', help='Path to TTF font file to use to generate
 parser.add_argument('--setting', type=str, help='Name of section heading in config.ini file')
 args, files = parser.parse_known_args()
 
+# get dict from Namespace object
 parsed = vars(args)
-#print('parsed', parsed)
 
 config.read('config.ini')
 
@@ -56,14 +47,13 @@ def options():
     pass
 
 # load the default config options
-options.font_color = config['default']['font_color']
-options.font_file = config['default']['font_file']
-options.font_size = int(config['default']['font_size'])
-
-options.label_location = config['default']['label_location']
-options.label_offset_TB = int(config['default']['label_offset_TB'])
-options.label_offset_LR = int(config['default']['label_offset_LR'])
-options.label_text = config['default']['label_text']
+options.font_color = 'red'
+options.font_file = './open-sans/OpenSans-Bold.ttf'
+options.font_size = 100
+options.label_location = 'TL'
+options.label_offset_TB = 50
+options.label_offset_LR = 50
+options.label_text = 'DEFAULT TEXT'
 
 # if the config file has a DEFAULTS section, override the internal
 # defaults with those settings
@@ -83,8 +73,8 @@ if 'DEFAULTS' in config:
     if 'label_text' in config['DEFAULTS']:
         options.label_text = config['DEFAULTS']['label_text']
 
-# if settings option provided via CLI, override the defaults
-# with the configs from that section
+# if settings option provided via CLI, override the options
+# with the values from that section
 if 'setting' in parsed:
     mysection = parsed['setting']
     if mysection in config:
@@ -105,7 +95,7 @@ if 'setting' in parsed:
     else:
         print('ERROR: --setting value of {} is not included in the config file'.format(mysection))
 
-# override the config options with any CLI options
+# override the options with any CLI options
 if 'text' in parsed:
     options.label_text = parsed['text']
 if 'color' in parsed:
