@@ -2,7 +2,7 @@
 
 These are the internal default configuration settings that will be used if nothing is provided via the config file DEFAULTS section, the section chosen in the configuration file via the --setting option, or any options chosen via the command line options. Option priority is: command line (first), config file section via --setting (second), config file DEFAULTS section (third), and internal defaults (last).
 
-- label_text = "Default Insertion Text"
+- label_text = "DEFAULT TEXT"
 - label_color = "red" # picked from list below
 - font_size = 100 # size the text will be printed
 - label_offset_LR = 50 # font points from edge of left and right of image
