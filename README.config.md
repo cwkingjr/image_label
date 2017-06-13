@@ -5,8 +5,8 @@ These are the internal default configuration settings that will be used if nothi
 - label_text = "DEFAULT TEXT"
 - label_color = "red" # picked from list below
 - font_size = 100 # size the text will be printed
-- label_offset_LR = 50 # font points from edge of left and right of image
-- label_offset_TB = 50 # font points from edge of top and bottom of image
+- label_offset_LR = 50 # pixels from edge of left and right of image
+- label_offset_TB = 50 # pixels from edge of top and bottom of image
 - label_location = "TL" # Top Left of image
 - font_file = "./open-sans/OpenSans-Bold.ttf" # path to your ttf font file
 
