@@ -27,14 +27,14 @@ colors = {
 parser = argparse.ArgumentParser(
     description='Add a text label to an existing image',
     argument_default=argparse.SUPPRESS)
-parser.add_argument('--text', type=str, help='Label text')
-parser.add_argument('--color', choices=colors.keys(), help='Font color of the label text')
-parser.add_argument('--size', type=int, help='Integer: Font size of the label text')
-parser.add_argument('--offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
-parser.add_argument('--offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
-parser.add_argument('--location', choices=locations, help='Location of the label on the image ()')
-parser.add_argument('--fontfile', help='Path to TTF font file to use to generate the text label')
-parser.add_argument('--setting', type=str, help='Name of section heading in config.ini file')
+parser.add_argument('-T','--text', type=str, help='Label text')
+parser.add_argument('-C','--color', choices=colors.keys(), help='Font color of the label text')
+parser.add_argument('-S','--size', type=int, help='Integer: Font size of the label text')
+parser.add_argument('-R','--offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
+parser.add_argument('-B','--offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
+parser.add_argument('-L','--location', choices=locations, help='Location of the label on the image ()')
+parser.add_argument('-F','--fontfile', help='Path to TTF font file to use to generate the text label')
+parser.add_argument('-s','--setting', type=str, help='Name of section heading in config.ini file')
 args, files = parser.parse_known_args()
 
 # get dict from Namespace object

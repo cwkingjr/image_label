@@ -1,0 +1,25 @@
+usage: image_label.py [-h] [-T TEXT] [-C {red,blue,green,yellow,black,white}]
+                      [-S SIZE] [-R OFFSET_LR] [-B OFFSET_TB]
+                      [-L {T,TR,R,BR,B,BL,L,TL}] [-F FONTFILE] [-s SETTING]
+
+Add a text label to an existing image
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -T TEXT, --text TEXT  Label text
+  -C {red,blue,green,yellow,black,white}, --color {red,blue,green,yellow,black,white}
+                        Font color of the label text
+  -S SIZE, --size SIZE  Integer: Font size of the label text
+  -R OFFSET_LR, --offset_LR OFFSET_LR
+                        Integer: Pixels to offset the label from the left and
+                        right of the image
+  -B OFFSET_TB, --offset_TB OFFSET_TB
+                        Integer: Pixels to offset the label from the top and
+                        bottom of the image
+  -L {T,TR,R,BR,B,BL,L,TL}, --location {T,TR,R,BR,B,BL,L,TL}
+                        Location of the label on the image ()
+  -F FONTFILE, --fontfile FONTFILE
+                        Path to TTF font file to use to generate the text
+                        label
+  -s SETTING, --setting SETTING
+                        Name of section heading in config.ini file
