@@ -32,7 +32,7 @@ parser.add_argument('-C','--color', choices=colors.keys(), help='Font color of t
 parser.add_argument('-S','--size', type=int, help='Integer: Font size of the label text')
 parser.add_argument('-R','--offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
 parser.add_argument('-B','--offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
-parser.add_argument('-L','--location', choices=locations, help='Location of the label on the image ()')
+parser.add_argument('-L','--location', choices=locations, help='Location of the label on the image')
 parser.add_argument('-F','--fontfile', help='Path to TTF font file to use to generate the text label')
 parser.add_argument('-s','--setting', type=str, help='Name of section heading in config.ini file')
 args, files = parser.parse_known_args()

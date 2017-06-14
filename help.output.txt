@@ -17,7 +17,7 @@ optional arguments:
                         Integer: Pixels to offset the label from the top and
                         bottom of the image
   -L {T,TR,R,BR,B,BL,L,TL}, --location {T,TR,R,BR,B,BL,L,TL}
-                        Location of the label on the image ()
+                        Location of the label on the image
   -F FONTFILE, --fontfile FONTFILE
                         Path to TTF font file to use to generate the text
                         label
