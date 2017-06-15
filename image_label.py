@@ -23,18 +23,21 @@ colors = {
     'black' : (0,0,0),
     'white' : (255,255,255)
 }
+acceptable_colors = sorted(colors.keys())
 
 parser = argparse.ArgumentParser(
     description='Add a text label to an existing image',
     argument_default=argparse.SUPPRESS)
-parser.add_argument('-T','--text', type=str, help='Label text')
-parser.add_argument('-C','--color', choices=colors.keys(), help='Font color of the label text')
-parser.add_argument('-S','--size', type=int, help='Integer: Font size of the label text')
-parser.add_argument('-R','--offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
-parser.add_argument('-B','--offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
-parser.add_argument('-L','--location', choices=locations, help='Location of the label on the image')
-parser.add_argument('-F','--fontfile', help='Path to TTF font file to use to generate the text label')
-parser.add_argument('-s','--setting', type=str, help='Name of section heading in config.ini file')
+
+parser.add_argument('-S','--setting', type=str, help='Name of section heading in config.ini file')
+parser.add_argument('-T','--label_text', type=str, help='Label text')
+parser.add_argument('-L','--label_location', choices=locations, help='Location of the label on the image')
+parser.add_argument('-C','--font_color', choices=colors.keys(), help='Font color of the label text')
+parser.add_argument('-F','--font_file', help='Path to TTF font file to use to generate the text label')
+parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of the label text')
+parser.add_argument('-R','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
+parser.add_argument('-B','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
+
 args, files = parser.parse_known_args()
 
 # get dict from Namespace object
@@ -46,7 +49,7 @@ def options():
     # using function object to host attributes instead of dict
     pass
 
-# load the default config options
+# set the internal default config options
 options.font_color = 'red'
 options.font_file = './open-sans/OpenSans-Bold.ttf'
 options.font_size = 100
@@ -55,65 +58,54 @@ options.label_offset_TB = 50
 options.label_offset_LR = 50
 options.label_text = 'DEFAULT TEXT'
 
+def load_settings_values(mydict):
+    if 'font_color' in mydict:
+        options.font_color = mydict['font_color']
+    if 'font_file' in mydict:
+        options.font_file = mydict['font_file']
+    if 'font_size' in mydict:
+        options.font_size = int(mydict['font_size'])
+    if 'label_location' in mydict:
+        options.label_location = mydict['label_location']
+    if 'label_offset_TB' in mydict:
+        options.label_offset_TB = int(mydict['label_offset_TB'])
+    if 'label_offset_LR' in mydict:
+        options.label_offset_LR = int(mydict['label_offset_LR'])
+    if 'label_text' in mydict:
+        options.label_text = mydict['label_text']
+
 # if the config file has a DEFAULTS section, override the internal
 # defaults with those settings
 if 'DEFAULTS' in config:
-    if 'font_color' in config['DEFAULTS']:
-        options.font_color = config['DEFAULTS']['font_color']
-    if 'font_file' in config['DEFAULTS']:
-        options.font_file = config['DEFAULTS']['font_file']
-    if 'font_size' in config['DEFAULTS']:
-        options.font_size = int(config['DEFAULTS']['font_size'])
-    if 'label_location' in config['DEFAULTS']:
-        options.label_location = config['DEFAULTS']['label_location']
-    if 'label_offset_TB' in config['DEFAULTS']:
-        options.label_offset_TB = int(config['DEFAULTS']['label_offset_TB'])
-    if 'label_offset_LR' in config['DEFAULTS']:
-        options.label_offset_LR = int(config['DEFAULTS']['label_offset_LR'])
-    if 'label_text' in config['DEFAULTS']:
-        options.label_text = config['DEFAULTS']['label_text']
+    load_settings_values(config['DEFAULTS'])
 
-# if settings option provided via CLI, override the options
+# if setting option provided via CLI, override the current options
 # with the values from that section
 if 'setting' in parsed:
     mysection = parsed['setting']
     if mysection in config:
-        if 'font_color' in config[mysection]:
-            options.font_color = config[mysection]['font_color']
-        if 'font_file' in config[mysection]:
-            options.font_file = config[mysection]['font_file']
-        if 'font_size' in config[mysection]:
-            options.font_size = int(config[mysection]['font_size'])
-        if 'label_location' in config[mysection]:
-            options.label_location = config[mysection]['label_location']
-        if 'label_offset_TB' in config[mysection]:
-            options.label_offset_TB = int(config[mysection]['label_offset_TB'])
-        if 'label_offset_LR' in config[mysection]:
-            options.label_offset_LR = int(config[mysection]['label_offset_LR'])
-        if 'label_text' in config[mysection]:
-            options.label_text = config[mysection]['label_text']
+        load_settings_values(config[mysection])
     else:
         print('ERROR: --setting value of {} is not included in the config file'.format(mysection))
 
-# override the options with any CLI options
-if 'text' in parsed:
-    options.label_text = parsed['text']
-if 'color' in parsed:
-    options.label_color = parsed['color']
-if 'size' in parsed:
-    options.font_size = int(parsed['size'])
-if 'offset_LR' in parsed:
-    options.label_offset_LR = int(parsed['offset_LR'])
-if 'offset_TB' in parsed:
-    options.label_offset_TB = int(parsed['offset_TB'])
-if 'location' in parsed:
-    options.label_location = parsed['location']
-if 'fontfile' in parsed:
-    options.font_file = parsed['fontfile']
+# override the current options with any CLI options
+load_settings_values(parsed)
+
+if not options.font_color in acceptable_colors:
+    print('Font color choice of {} is not among acceptable values of {}'.format(options.font_color, acceptable_colors))
+    sys.exit(1)
 
 if not options.label_location in locations:
     print('Location choice of {} is not among acceptable values of {}'.format(options.label_location, locations))
     sys.exit(1)
+
+# test ttf file to make sure it's a ttf file using magic bytes
+true_type_font_magic = b'\x00\x01\x00\x00'
+with open(options.font_file,'rb') as f:
+    bites = f.read(4)
+    if bites != true_type_font_magic:
+        print('The font file provided does not appear to be a True Type Font file')
+        sys.exit(1)
 
 img = Image.open("sample_in.jpg")
 image_width, image_height = img.size
