@@ -6,6 +6,7 @@ import configparser
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import os
 import sys
 
 config = configparser.ConfigParser()
@@ -107,35 +108,47 @@ with open(options.font_file,'rb') as f:
         print('The font file provided does not appear to be a True Type Font file')
         sys.exit(1)
 
-img = Image.open("sample_in.jpg")
-image_width, image_height = img.size
-draw = ImageDraw.Draw(img)
-font = ImageFont.truetype(options.font_file, int(options.font_size))
-text_width, text_height  = draw.textsize(options.label_text, font=font)
+def process_file(filename):
+    img = Image.open(filename)
+    image_width, image_height = img.size
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.truetype(options.font_file, int(options.font_size))
+    text_width, text_height  = draw.textsize(options.label_text, font=font)
 
-if (((options.label_offset_LR * 2) + text_width) > image_width):
-    print('label_offset_LR on each side plus text width is too large to fit on this image')
-    sys.exit(1)
+    if (((options.label_offset_LR * 2) + text_width) > image_width):
+        print('label_offset_LR on each side plus text width is too large to fit on {}'.format(filename))
+        sys.exit(1)
     
-if (((options.label_offset_TB * 2) + text_height) > image_height):
-    print('label_offset_TB on top and bottom, plus text height is too large to fit on this image')
-    sys.exit(1)
+    if (((options.label_offset_TB * 2) + text_height) > image_height):
+        print('label_offset_TB on top and bottom, plus text height is too large to fit on {}'.format(filename))
+        sys.exit(1)
 
-# establish print location x
-if options.label_location in ['TL', 'L', 'BL']:
-    x = options.label_offset_LR
-elif options.label_location in ['T', 'B']:
-    x = (image_width - text_width) / 2
-elif options.label_location in ['TR', 'R', 'BR']:
-    x = image_width - (text_width + options.label_offset_LR)
+    # establish print location x
+    if options.label_location in ['TL', 'L', 'BL']:
+        x = options.label_offset_LR
+    elif options.label_location in ['T', 'B']:
+        x = (image_width - text_width) / 2
+    elif options.label_location in ['TR', 'R', 'BR']:
+        x = image_width - (text_width + options.label_offset_LR)
 
-# establish print location y
-if options.label_location in ['TL', 'T', 'TR']:
-    y = options.label_offset_TB
-elif options.label_location in ['L', 'R']:
-    y = (image_height - text_height) / 2
-elif options.label_location in ['BL', 'B', 'BR']:
-    y = image_height - (text_height + options.label_offset_TB)
+    # establish print location y
+    if options.label_location in ['TL', 'T', 'TR']:
+        y = options.label_offset_TB
+    elif options.label_location in ['L', 'R']:
+        y = (image_height - text_height) / 2
+    elif options.label_location in ['BL', 'B', 'BR']:
+        y = image_height - (text_height + options.label_offset_TB)
 
-draw.text((x, y), options.label_text, colors[options.font_color], font=font)
-img.save('sample_out.jpg')
+    draw.text((x, y), options.label_text, colors[options.font_color], font=font)
+
+    # add labelled to filename to prevent overwriting original
+    if '.' in os.path.basename(filename):
+        path,extension = os.path.splitext(filename)
+        outfilename = "{}.labeled{}".format(path, extension)
+    else:
+        outfilename = "{}.labeled".format(path)
+
+    img.save(outfilename)
+
+for filename in files:
+    process_file(filename)
