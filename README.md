@@ -30,8 +30,10 @@ Things that may need to be considered / added later:
 
 The idea is that a user would be able to invoke something like this on the command line:
 
-    $image_label.py --text="TOP" --color=red --offset_TB=5 --offset_LR=10 --size=16 --location=TL image1.jpg image2.jpg
+    $image_label.py --label_text="TOP" --font_color=red --lable_offset_TB=5 --label_offset_LR=10 --font_size=16 --label_location=TL image1.jpg image2.jpg
 
-    $image_label.py --setting=top image1.jpg image2.jpg (uses defaults and [top] setting overrides)
+    $image_label.py -T="TOP" -C=red -B=5 -R=10 -Z=16 -L=TL image1.jpg image2.jpg (same as above)
 
-    $image_label.py image1.jpg image2.jpg (uses all default settings)
+    $image_label.py --setting=top image1.jpg image2.jpg (uses [top] setting overrides)
+
+    $image_label.py image1.jpg image2.jpg (uses all default/DEFAULT settings)
