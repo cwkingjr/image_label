@@ -30,15 +30,16 @@ parser = argparse.ArgumentParser(
     description='Add a text label to an existing image',
     argument_default=argparse.SUPPRESS)
 
-parser.add_argument('-S','--setting', type=str, help='Name of section heading in config file')
+parser.add_argument('-S','--setting', type=str, help='Name of section heading in config file.')
 parser.add_argument('-T','--label_text', type=str, help='Label text')
-parser.add_argument('-L','--label_location', choices=locations, help='Location of the label on the image')
-parser.add_argument('-C','--font_color', choices=colors.keys(), help='Font color of the label text')
-parser.add_argument('-F','--font_file', help='Path to TTF font file to use to generate the text label')
-parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of the label text')
-parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
-parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
-parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate clockwise [1-359]')
+parser.add_argument('-L','--label_location', choices=locations, help='Location of the label on the image.')
+parser.add_argument('-C','--font_color', choices=colors.keys(), help='Font color of the label text.')
+parser.add_argument('-F','--font_file', help='Path to TTF font file to use to generate the text label.')
+parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of the label text.')
+parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image.')
+parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image.')
+parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate clockwise [1-359].')
+parser.add_argument('-J','--jpg_quality', type=int, help='Integer: JPG quality [25-100]. Default is 93. Larger affects output file size but may not improve actual quality. Quality cannot get better than the original image.')
 
 args, files = parser.parse_known_args()
 
@@ -63,6 +64,7 @@ options.label_offset_TB = 50
 options.label_offset_LR = 50
 options.label_text = 'DEFAULT TEXT'
 options.rotate = None
+options.jpg_quality = 93
 
 def load_settings_values(mydict):
     if 'font_color' in mydict:
@@ -81,6 +83,8 @@ def load_settings_values(mydict):
         options.label_text = mydict['label_text']
     if 'rotate' in mydict:
         options.rotate = mydict['rotate']
+    if 'jpg_quality' in mydict:
+        options.jpg_quality = mydict['jpg_quality']
 
 # if the config file has a DEFAULTS section, override the internal
 # defaults with those settings
@@ -111,6 +115,10 @@ if options.rotate:
     if not 0 < options.rotate < 360:
         print('ERROR: --rotate must be between 1-359 inclusive')
         sys.exit(1)
+
+if not 25 <= options.jpg_quality <= 100:
+    print('jgp_quality must be between 25-100. This will affect image quality and output jpg/jpeg file size')
+    sys.exit(1)
 
 # test ttf file to make sure it's a ttf file using magic bytes
 true_type_font_magic = b'\x00\x01\x00\x00'
@@ -166,7 +174,8 @@ def process_file(filename):
     else:
         outfilename = "{}.altered".format(path)
 
-    img.save(outfilename)
+    img.save(outfilename, quality=options.jpg_quality)
+
 
 for filename in files:
     process_file(filename)

@@ -2,30 +2,35 @@ usage: image_label.py [-h] [-S SETTING] [-T LABEL_TEXT]
                       [-L {T,TR,R,BR,B,BL,L,TL}]
                       [-C {red,blue,green,yellow,black,white}] [-F FONT_FILE]
                       [-Z FONT_SIZE] [-H LABEL_OFFSET_LR] [-V LABEL_OFFSET_TB]
-                      [-R ROTATE]
+                      [-R ROTATE] [-J JPG_QUALITY]
 
 Add a text label to an existing image
 
 optional arguments:
   -h, --help            show this help message and exit
   -S SETTING, --setting SETTING
-                        Name of section heading in config file
+                        Name of section heading in config file.
   -T LABEL_TEXT, --label_text LABEL_TEXT
                         Label text
   -L {T,TR,R,BR,B,BL,L,TL}, --label_location {T,TR,R,BR,B,BL,L,TL}
-                        Location of the label on the image
+                        Location of the label on the image.
   -C {red,blue,green,yellow,black,white}, --font_color {red,blue,green,yellow,black,white}
-                        Font color of the label text
+                        Font color of the label text.
   -F FONT_FILE, --font_file FONT_FILE
                         Path to TTF font file to use to generate the text
-                        label
+                        label.
   -Z FONT_SIZE, --font_size FONT_SIZE
-                        Integer: Font size of the label text
+                        Integer: Font size of the label text.
   -H LABEL_OFFSET_LR, --label_offset_LR LABEL_OFFSET_LR
                         Integer: Pixels to offset the label from the left and
-                        right of the image
+                        right of the image.
   -V LABEL_OFFSET_TB, --label_offset_TB LABEL_OFFSET_TB
                         Integer: Pixels to offset the label from the top and
-                        bottom of the image
+                        bottom of the image.
   -R ROTATE, --rotate ROTATE
-                        Integer: Degrees to rotate clockwise [1-359]
+                        Integer: Degrees to rotate clockwise [1-359].
+  -J JPG_QUALITY, --jpg_quality JPG_QUALITY
+                        Integer: JPG quality [25-100]. Default is 93. Larger
+                        affects output file size but may not improve actual
+                        quality. Quality cannot get better than the original
+                        image.
