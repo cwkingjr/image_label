@@ -36,18 +36,21 @@ parser.add_argument('-L','--label_location', choices=locations, help='Location o
 parser.add_argument('-C','--font_color', choices=colors.keys(), help='Font color of the label text')
 parser.add_argument('-F','--font_file', help='Path to TTF font file to use to generate the text label')
 parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of the label text')
-parser.add_argument('-R','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
-parser.add_argument('-B','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
+parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
+parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
 
 args, files = parser.parse_known_args()
 
 # get dict from Namespace object
 parsed = vars(args)
 
-config.read('config.ini')
+if 'IMAGE_LABEL_CONFIG' in os.environ:
+    config.read(os.environ['IMAGE_LABEL_CONFIG'])
+else:
+    print('Could not find environment variable of IMAGE_LABEL_CONFIG so could not read config file')
 
+# using function object to host options as attributes instead of dict k:v
 def options():
-    # using function object to host attributes instead of dict
     pass
 
 # set the internal default config options
@@ -141,7 +144,7 @@ def process_file(filename):
 
     draw.text((x, y), options.label_text, colors[options.font_color], font=font)
 
-    # add labelled to filename to prevent overwriting original
+    # add labeled to filename to prevent overwriting original
     if '.' in os.path.basename(filename):
         path,extension = os.path.splitext(filename)
         outfilename = "{}.labeled{}".format(path, extension)
