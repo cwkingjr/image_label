@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(
     description='Add a text label to an existing image',
     argument_default=argparse.SUPPRESS)
 
-parser.add_argument('-S','--setting', type=str, help='Name of section heading in config.ini file')
+parser.add_argument('-S','--setting', type=str, help='Name of section heading in config file')
 parser.add_argument('-T','--label_text', type=str, help='Label text')
 parser.add_argument('-L','--label_location', choices=locations, help='Location of the label on the image')
 parser.add_argument('-C','--font_color', choices=colors.keys(), help='Font color of the label text')
@@ -38,6 +38,7 @@ parser.add_argument('-F','--font_file', help='Path to TTF font file to use to ge
 parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of the label text')
 parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image')
 parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image')
+parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate clockwise [1-359]')
 
 args, files = parser.parse_known_args()
 
@@ -61,6 +62,7 @@ options.label_location = 'TL'
 options.label_offset_TB = 50
 options.label_offset_LR = 50
 options.label_text = 'DEFAULT TEXT'
+options.rotate = None
 
 def load_settings_values(mydict):
     if 'font_color' in mydict:
@@ -77,6 +79,8 @@ def load_settings_values(mydict):
         options.label_offset_LR = int(mydict['label_offset_LR'])
     if 'label_text' in mydict:
         options.label_text = mydict['label_text']
+    if 'rotate' in mydict:
+        options.rotate = mydict['rotate']
 
 # if the config file has a DEFAULTS section, override the internal
 # defaults with those settings
@@ -103,6 +107,11 @@ if not options.label_location in locations:
     print('Location choice of {} is not among acceptable values of {}'.format(options.label_location, locations))
     sys.exit(1)
 
+if options.rotate:
+    if not 0 < options.rotate < 360:
+        print('ERROR: --rotate must be between 1-359 inclusive')
+        sys.exit(1)
+
 # test ttf file to make sure it's a ttf file using magic bytes
 true_type_font_magic = b'\x00\x01\x00\x00'
 with open(options.font_file,'rb') as f:
@@ -113,17 +122,23 @@ with open(options.font_file,'rb') as f:
 
 def process_file(filename):
     img = Image.open(filename)
+    
+    if options.rotate:
+        # rotation is ccw but can take negative numbers for cw, so multi input by -1
+        # expand prevents truncation of image but can result in black borders
+        img = img.rotate(int(options.rotate) * -1, expand=True)
+
     image_width, image_height = img.size
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype(options.font_file, int(options.font_size))
     text_width, text_height  = draw.textsize(options.label_text, font=font)
 
-    if (((options.label_offset_LR * 2) + text_width) > image_width):
-        print('label_offset_LR on each side plus text width is too large to fit on {}'.format(filename))
+    if options.label_offset_LR * 2 + text_width > image_width:
+        print('label_offset_LR * 2, plus text width is too large to fit on {}'.format(filename))
         sys.exit(1)
     
-    if (((options.label_offset_TB * 2) + text_height) > image_height):
-        print('label_offset_TB on top and bottom, plus text height is too large to fit on {}'.format(filename))
+    if options.label_offset_TB * 2 + text_height > image_height:
+        print('label_offset_TB * 2, plus text height is too large to fit on {}'.format(filename))
         sys.exit(1)
 
     # establish print location x
@@ -144,12 +159,12 @@ def process_file(filename):
 
     draw.text((x, y), options.label_text, colors[options.font_color], font=font)
 
-    # add labeled to filename to prevent overwriting original
+    # add 'altered' to filename to prevent overwriting original
     if '.' in os.path.basename(filename):
         path,extension = os.path.splitext(filename)
-        outfilename = "{}.labeled{}".format(path, extension)
+        outfilename = "{}.altered{}".format(path, extension)
     else:
-        outfilename = "{}.labeled".format(path)
+        outfilename = "{}.altered".format(path)
 
     img.save(outfilename)
 

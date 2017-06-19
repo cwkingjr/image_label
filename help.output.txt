@@ -1,14 +1,15 @@
 usage: image_label.py [-h] [-S SETTING] [-T LABEL_TEXT]
                       [-L {T,TR,R,BR,B,BL,L,TL}]
                       [-C {red,blue,green,yellow,black,white}] [-F FONT_FILE]
-                      [-Z FONT_SIZE] [-R LABEL_OFFSET_LR] [-B LABEL_OFFSET_TB]
+                      [-Z FONT_SIZE] [-H LABEL_OFFSET_LR] [-V LABEL_OFFSET_TB]
+                      [-R ROTATE]
 
 Add a text label to an existing image
 
 optional arguments:
   -h, --help            show this help message and exit
   -S SETTING, --setting SETTING
-                        Name of section heading in config.ini file
+                        Name of section heading in config file
   -T LABEL_TEXT, --label_text LABEL_TEXT
                         Label text
   -L {T,TR,R,BR,B,BL,L,TL}, --label_location {T,TR,R,BR,B,BL,L,TL}
@@ -20,9 +21,11 @@ optional arguments:
                         label
   -Z FONT_SIZE, --font_size FONT_SIZE
                         Integer: Font size of the label text
-  -R LABEL_OFFSET_LR, --label_offset_LR LABEL_OFFSET_LR
+  -H LABEL_OFFSET_LR, --label_offset_LR LABEL_OFFSET_LR
                         Integer: Pixels to offset the label from the left and
                         right of the image
-  -B LABEL_OFFSET_TB, --label_offset_TB LABEL_OFFSET_TB
+  -V LABEL_OFFSET_TB, --label_offset_TB LABEL_OFFSET_TB
                         Integer: Pixels to offset the label from the top and
                         bottom of the image
+  -R ROTATE, --rotate ROTATE
+                        Integer: Degrees to rotate clockwise [1-359]
