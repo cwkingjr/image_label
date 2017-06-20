@@ -6,6 +6,7 @@ import configparser
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+from PIL import ImageStat
 import os
 import sys
 
@@ -40,6 +41,7 @@ parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to
 parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image.')
 parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate clockwise [1-359].')
 parser.add_argument('-J','--jpg_quality', type=int, help='Integer: JPG quality [25-100]. Default is 93. Larger affects output file size but may not improve actual quality. Quality cannot get better than the original image.')
+parser.add_argument('-B','--black_for_BW', action='store_true', help='Use black as text color for black and white images. Default is white.')
 
 args, files = parser.parse_known_args()
 
@@ -65,6 +67,7 @@ options.label_offset_LR = 50
 options.label_text = 'DEFAULT TEXT'
 options.rotate = None
 options.jpg_quality = 93
+options.black_for_BW = False
 
 def load_settings_values(mydict):
     if 'font_color' in mydict:
@@ -85,6 +88,8 @@ def load_settings_values(mydict):
         options.rotate = mydict['rotate']
     if 'jpg_quality' in mydict:
         options.jpg_quality = mydict['jpg_quality']
+    if 'black_for_BW' in mydict:
+        options.black_for_BW = mydict['black_for_BW']
 
 # if the config file has a DEFAULTS section, override the internal
 # defaults with those settings
@@ -128,9 +133,21 @@ with open(options.font_file,'rb') as f:
         print('The font file provided does not appear to be a True Type Font file')
         sys.exit(1)
 
+#https://stackoverflow.com/questions/20068945/detect-if-image-is-color-grayscale-or-black-and-white-with-python-pil
+def is_black_and_white(myimg):
+    COLOR_VARIANCE_THRESHOLD = 1000
+
+    v = ImageStat.Stat(myimg).var
+    maxmin = abs(max(v) - min(v))
+    
+    if len(v) == 1 or maxmin < COLOR_VARIANCE_THRESHOLD:
+        return True
+    else:
+        return False
+    
 def process_file(filename):
     img = Image.open(filename)
-    
+
     if options.rotate:
         # rotation is ccw but can take negative numbers for cw, so multi input by -1
         # expand prevents truncation of image but can result in black borders
@@ -139,7 +156,7 @@ def process_file(filename):
     image_width, image_height = img.size
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype(options.font_file, int(options.font_size))
-    text_width, text_height  = draw.textsize(options.label_text, font=font)
+    text_width, text_height = draw.textsize(options.label_text, font=font)
 
     if options.label_offset_LR * 2 + text_width > image_width:
         print('label_offset_LR * 2, plus text width is too large to fit on {}'.format(filename))
@@ -165,7 +182,20 @@ def process_file(filename):
     elif options.label_location in ['BL', 'B', 'BR']:
         y = image_height - (text_height + options.label_offset_TB)
 
-    draw.text((x, y), options.label_text, colors[options.font_color], font=font)
+    if is_black_and_white(img):
+        # when the image is black and white, draw.text must provide a single color,
+        # not the 3-tuple RGB color, it will blow up with obscure error
+        if options.black_for_BW:
+            bwcolor = 0
+            bwcolortext = 'black'
+        else:
+            bwcolor = 255
+            bwcolortext = 'white'
+
+        print('Image appears to be a black and white, so using {} as text color'.format(bwcolortext))
+        draw.text((x, y), options.label_text, bwcolor, font=font)
+    else:
+        draw.text((x, y), options.label_text, colors[options.font_color], font=font)
 
     # add 'altered' to filename to prevent overwriting original
     if '.' in os.path.basename(filename):
