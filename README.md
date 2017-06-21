@@ -33,6 +33,13 @@ On Linux, you can set that up as a hidden file in your home directory by adding 
     export IMAGE_LABEL_CONFIG=~/.image_label_config.ini
 
 When completed, make sure your terminal re-reads it by either closing and reopening your terminal or re-sourcing it like this:
+
     source .bash_profile
+
+The script was built and tested on Python 3.6. To get started, install python 3.6, download the code into a folder, then pip install the requirements.
+
+    git clone https://github.com/cwkingjr/image_label.git
+    cd image_label
+    pip install -r requirements.txt
 
 On Windows, ... I'm looking at that next.

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """App to add a label to one or more images"""
 
+# https://github.com/cwkingjr/image_label
+# License: MIT, see LICENSE file
+
 import argparse
 import configparser
 from PIL import Image
