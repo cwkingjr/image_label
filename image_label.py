@@ -28,10 +28,10 @@ colors = {
 acceptable_colors = sorted(colors.keys())
 
 parser = argparse.ArgumentParser(
-    description='Add a text label to an existing image',
+    description='Add a text label to an existing image. Optionally, also rotate the image.',
     argument_default=argparse.SUPPRESS)
 
-parser.add_argument('-S','--setting', type=str, help='Name of section heading in config file.')
+parser.add_argument('-S','--setting', type=str, help='Name of section in config file to use.')
 parser.add_argument('-T','--label_text', type=str, help='Label text')
 parser.add_argument('-L','--label_location', choices=locations, help='Location of the label on the image.')
 parser.add_argument('-C','--font_color', choices=colors.keys(), help='Font color of the label text.')
@@ -39,7 +39,7 @@ parser.add_argument('-F','--font_file', help='Path to TTF font file to use to ge
 parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of the label text.')
 parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image.')
 parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image.')
-parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate clockwise [1-359].')
+parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate image clockwise [1-359].')
 parser.add_argument('-J','--jpg_quality', type=int, help='Integer: JPG quality [25-100]. Default is 93. Larger affects output file size but may not improve actual quality. Quality cannot get better than the original image.')
 parser.add_argument('-B','--black_for_BW', action='store_true', help='Use black as text color for black and white images. Default is white.')
 parser.add_argument('-I','--list_ini_sections', action='store_true', help='List the sections in your config file for convenience.')

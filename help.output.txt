@@ -4,12 +4,12 @@ usage: image_label.py [-h] [-S SETTING] [-T LABEL_TEXT]
                       [-Z FONT_SIZE] [-H LABEL_OFFSET_LR] [-V LABEL_OFFSET_TB]
                       [-R ROTATE] [-J JPG_QUALITY] [-B] [-I]
 
-Add a text label to an existing image
+Add a text label to an existing image. Optionally, also rotate the image.
 
 optional arguments:
   -h, --help            show this help message and exit
   -S SETTING, --setting SETTING
-                        Name of section heading in config file.
+                        Name of section in config file to use.
   -T LABEL_TEXT, --label_text LABEL_TEXT
                         Label text
   -L {T,TR,R,BR,B,BL,L,TL}, --label_location {T,TR,R,BR,B,BL,L,TL}
@@ -28,7 +28,7 @@ optional arguments:
                         Integer: Pixels to offset the label from the top and
                         bottom of the image.
   -R ROTATE, --rotate ROTATE
-                        Integer: Degrees to rotate clockwise [1-359].
+                        Integer: Degrees to rotate image clockwise [1-359].
   -J JPG_QUALITY, --jpg_quality JPG_QUALITY
                         Integer: JPG quality [25-100]. Default is 93. Larger
                         affects output file size but may not improve actual
