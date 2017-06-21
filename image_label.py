@@ -125,6 +125,16 @@ if not 25 <= options.jpg_quality <= 100:
     print('jgp_quality must be between 25-100. This will affect image quality and output jpg/jpeg file size')
     sys.exit(1)
 
+# make sure entries from setting file are correct and converted to bool
+if type(options.black_for_BW) == str:
+    if options.black_for_BW == 'True':
+        options.black_for_BW = True
+    elif options.black_for_BW == 'False':
+        options.black_for_BW = False
+    else:
+        print('ERROR: When setting black_for_BW via config file, it must be set to True or False')
+        sys.exit(1)
+
 # test ttf file to make sure it's a ttf file using magic bytes
 true_type_font_magic = b'\x00\x01\x00\x00'
 with open(options.font_file,'rb') as f:
@@ -133,7 +143,8 @@ with open(options.font_file,'rb') as f:
         print('The font file provided does not appear to be a True Type Font file')
         sys.exit(1)
 
-#https://stackoverflow.com/questions/20068945/detect-if-image-is-color-grayscale-or-black-and-white-with-python-pil
+# https://stackoverflow.com/questions/20068945/
+# detect-if-image-is-color-grayscale-or-black-and-white-with-python-pil
 def is_black_and_white(myimg):
     COLOR_VARIANCE_THRESHOLD = 1000
 
@@ -184,7 +195,7 @@ def process_file(filename):
 
     if is_black_and_white(img):
         # when the image is black and white, draw.text must provide a single color,
-        # not the 3-tuple RGB color, it will blow up with obscure error
+        # not the 3-tuple RGB color, it will blow up
         if options.black_for_BW:
             bwcolor = 0
             bwcolortext = 'black'
@@ -192,7 +203,7 @@ def process_file(filename):
             bwcolor = 255
             bwcolortext = 'white'
 
-        print('Image appears to be a black and white, so using {} as text color'.format(bwcolortext))
+        print('Image appears to be black and white, which cannot take RGB text, so using {} as text color'.format(bwcolortext))
         draw.text((x, y), options.label_text, bwcolor, font=font)
     else:
         draw.text((x, y), options.label_text, colors[options.font_color], font=font)
