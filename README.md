@@ -17,12 +17,22 @@ Example invocations:
 
     $image_label.py --label_text="TOP" --font_color=red --lable_offset_TB=5 --label_offset_LR=10 --font_size=16 --label_location=TL image1.jpg image2.jpg
 
-    $image_label.py -T="TOP" -C=red -V=5 -H=10 -Z=16 -L=TL image1.jpg image2.jpg (same as above)
+    $image_label.py -T="TOP" -C=red -V=5 -H=10 -Z=16 -L=TL image1.jpg image2.jpg (same as above, using short names)
 
     $image_label.py --setting=top image1.jpg image2.jpg (uses config file [top] section values)
 
-    $image_label.py image1.jpg image2.jpg (uses all default/DEFAULT settings)
+    $image_label.py image1.jpg image2.jpg (uses all default settings)
 
     $image_label.py -O=PNG image1.jpg image2.jpg (uses all defaults, outputs in PNG format)
 
-    $image_label.py -O=PNG -R=90 image1.jpg image2.jpg (same as above, but rotates image 90 degrees)
+    $image_label.py -O=PNG -R=90 image1.jpg image2.jpg (same as above, but rotates image 90 degrees CW)
+
+The script looks in your environment for a variable named IMAGE_LABEL_CONFIG, where it expects to find the path to your config file.
+
+On Linux, you can set that up as a hidden file in your home directory by adding this to your .bash_profile:
+    export IMAGE_LABEL_CONFIG=~/.image_label_config.ini
+
+When completed, make sure your terminal re-reads it by either closing and reopening your terminal or re-sourcing it like this:
+    source .bash_profile
+
+On Windows, ... I'm looking at that next.
