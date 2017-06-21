@@ -30,6 +30,7 @@ Example invocations:
 The script looks in your environment for a variable named IMAGE_LABEL_CONFIG, where it expects to find the path to your config file.
 
 On Linux, you can set that up as a hidden file in your home directory by adding this to your .bash_profile:
+
     export IMAGE_LABEL_CONFIG=~/.image_label_config.ini
 
 When completed, make sure your terminal re-reads it by either closing and reopening your terminal or re-sourcing it like this:
