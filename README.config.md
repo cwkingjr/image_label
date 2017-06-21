@@ -9,6 +9,9 @@ These are the internal default configuration settings that will be used if nothi
 - label_offset_TB = 50 # pixels from edge of top and bottom of image
 - label_location = "TL" # Top Left of image
 - font_file = "./open-sans/OpenSans-Bold.ttf" # path to your ttf font file
+- rotate = None # rotate the image by degrees clockwise
+- jpg_quality = 93 # for jpg/jpeg images, save with high quality
+- black_for_BW = False # if the image is black and white, use white for the text
 
 The settings value choices are:
 
