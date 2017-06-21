@@ -3,6 +3,7 @@ usage: image_label.py [-h] [-S SETTING] [-T LABEL_TEXT]
                       [-C {red,blue,green,yellow,black,white}] [-F FONT_FILE]
                       [-Z FONT_SIZE] [-H LABEL_OFFSET_LR] [-V LABEL_OFFSET_TB]
                       [-R ROTATE] [-J JPG_QUALITY] [-B] [-I]
+                      [-O {BMP,JPEG,PNG}]
 
 Add a text label to an existing image. Optionally, also rotate the image.
 
@@ -30,7 +31,7 @@ optional arguments:
   -R ROTATE, --rotate ROTATE
                         Integer: Degrees to rotate image clockwise [1-359].
   -J JPG_QUALITY, --jpg_quality JPG_QUALITY
-                        Integer: JPG quality [25-100]. Default is 93. Larger
+                        Integer: JPG quality [1-95]. Default is 93. Larger
                         affects output file size but may not improve actual
                         quality. Quality cannot get better than the original
                         image.
@@ -38,3 +39,5 @@ optional arguments:
                         Default is white.
   -I, --list_ini_sections
                         List the sections in your config file for convenience.
+  -O {BMP,JPEG,PNG}, --output_format {BMP,JPEG,PNG}
+                        Output file format. Default is JPEG.

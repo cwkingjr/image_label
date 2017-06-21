@@ -27,6 +27,9 @@ colors = {
 }
 acceptable_colors = sorted(colors.keys())
 
+# http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+output_formats = 'BMP JPEG PNG'.split()
+
 parser = argparse.ArgumentParser(
     description='Add a text label to an existing image. Optionally, also rotate the image.',
     argument_default=argparse.SUPPRESS)
@@ -40,9 +43,10 @@ parser.add_argument('-Z','--font_size', type=int, help='Integer: Font size of th
 parser.add_argument('-H','--label_offset_LR', type=int, help='Integer: Pixels to offset the label from the left and right of the image.')
 parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to offset the label from the top and bottom of the image.')
 parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate image clockwise [1-359].')
-parser.add_argument('-J','--jpg_quality', type=int, help='Integer: JPG quality [25-100]. Default is 93. Larger affects output file size but may not improve actual quality. Quality cannot get better than the original image.')
+parser.add_argument('-J','--jpg_quality', type=int, help='Integer: JPG quality [1-95]. Default is 93. Larger affects output file size but may not improve actual quality. Quality cannot get better than the original image.')
 parser.add_argument('-B','--black_for_BW', action='store_true', help='Use black as text color for black and white images. Default is white.')
 parser.add_argument('-I','--list_ini_sections', action='store_true', help='List the sections in your config file for convenience.')
+parser.add_argument('-O','--output_format', choices=output_formats, help='Output file format. Default is JPEG.')
 
 args, files = parser.parse_known_args()
 
@@ -73,6 +77,7 @@ options.label_text = 'DEFAULT TEXT'
 options.rotate = None
 options.jpg_quality = 93
 options.black_for_BW = False
+options.output_format = 'JPEG'
 
 def load_settings_values(mydict):
     if 'font_color' in mydict:
@@ -95,6 +100,8 @@ def load_settings_values(mydict):
         options.jpg_quality = mydict['jpg_quality']
     if 'black_for_BW' in mydict:
         options.black_for_BW = mydict['black_for_BW']
+    if 'output_format' in mydict:
+        options.output_format = mydict['output_format']
 
 # if the config file has a DEFAULTS section, override the internal
 # defaults with those settings
@@ -126,8 +133,8 @@ if options.rotate:
         print('ERROR: --rotate must be between 1-359 inclusive')
         sys.exit(1)
 
-if not 25 <= options.jpg_quality <= 100:
-    print('jgp_quality must be between 25-100. This will affect image quality and output jpg/jpeg file size')
+if not 1 <= options.jpg_quality <= 95:
+    print('jgp_quality must be between 1-95. This will affect image quality and output jpg/jpeg file size')
     sys.exit(1)
 
 # make sure entries from setting file are correct and converted to bool
@@ -140,6 +147,10 @@ if type(options.black_for_BW) == str:
         print('ERROR: When setting black_for_BW via config file, it must be set to True or False')
         sys.exit(1)
 
+if not options.output_format in output_formats:
+    print('ERROR: Output format {} is not valid, choose from {}'.format(options.output_format, output_formats))
+    sys.exit(1)
+
 # test ttf file to make sure it's a ttf file using magic bytes
 true_type_font_magic = b'\x00\x01\x00\x00'
 with open(options.font_file,'rb') as f:
@@ -151,12 +162,15 @@ with open(options.font_file,'rb') as f:
 # https://stackoverflow.com/questions/20068945/
 # detect-if-image-is-color-grayscale-or-black-and-white-with-python-pil
 def is_black_and_white(myimg):
-    COLOR_VARIANCE_THRESHOLD = 1000
+    # choosing 200 because I had some color images that only had ~500 v
+    COLOR_VARIANCE_THRESHOLD = 200
 
     v = ImageStat.Stat(myimg).var
     maxmin = abs(max(v) - min(v))
     
-    if len(v) == 1 or maxmin < COLOR_VARIANCE_THRESHOLD:
+    if len(v) == 1:
+        return True
+    elif maxmin < COLOR_VARIANCE_THRESHOLD:
         return True
     else:
         return False
@@ -215,13 +229,13 @@ def process_file(filename):
 
     # add 'altered' to filename to prevent overwriting original
     if '.' in os.path.basename(filename):
-        path,extension = os.path.splitext(filename)
-        outfilename = "{}.altered{}".format(path, extension)
+        path,_ = os.path.splitext(filename)
+        outfilename = "{}.altered.{}".format(path, options.output_format)
     else:
         outfilename = "{}.altered".format(path)
 
-    img.save(outfilename, quality=options.jpg_quality)
-
+    # of BMP JPEG PNG only JPEG consumes the 'quality' parameter
+    img.save(outfilename, format=options.output_format, quality=options.jpg_quality)
 
 for filename in files:
     process_file(filename)
