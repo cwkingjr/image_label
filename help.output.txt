@@ -2,7 +2,7 @@ usage: image_label.py [-h] [-S SETTING] [-T LABEL_TEXT]
                       [-L {T,TR,R,BR,B,BL,L,TL}]
                       [-C {red,blue,green,yellow,black,white}] [-F FONT_FILE]
                       [-Z FONT_SIZE] [-H LABEL_OFFSET_LR] [-V LABEL_OFFSET_TB]
-                      [-R ROTATE] [-J JPG_QUALITY] [-B]
+                      [-R ROTATE] [-J JPG_QUALITY] [-B] [-I]
 
 Add a text label to an existing image
 
@@ -36,3 +36,5 @@ optional arguments:
                         image.
   -B, --black_for_BW    Use black as text color for black and white images.
                         Default is white.
+  -I, --list_ini_sections
+                        List the sections in your config file for convenience.

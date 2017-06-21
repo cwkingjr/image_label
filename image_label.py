@@ -42,6 +42,7 @@ parser.add_argument('-V','--label_offset_TB', type=int, help='Integer: Pixels to
 parser.add_argument('-R','--rotate', type=int, help='Integer: Degrees to rotate clockwise [1-359].')
 parser.add_argument('-J','--jpg_quality', type=int, help='Integer: JPG quality [25-100]. Default is 93. Larger affects output file size but may not improve actual quality. Quality cannot get better than the original image.')
 parser.add_argument('-B','--black_for_BW', action='store_true', help='Use black as text color for black and white images. Default is white.')
+parser.add_argument('-I','--list_ini_sections', action='store_true', help='List the sections in your config file for convenience.')
 
 args, files = parser.parse_known_args()
 
@@ -52,6 +53,10 @@ if 'IMAGE_LABEL_CONFIG' in os.environ:
     config.read(os.environ['IMAGE_LABEL_CONFIG'])
 else:
     print('Could not find environment variable of IMAGE_LABEL_CONFIG so could not read config file')
+
+if 'list_ini_sections' in parsed:
+    print(' '.join(sorted(config.sections())))
+    sys.exit(0)
 
 # using function object to host options as attributes instead of dict k:v
 def options():
