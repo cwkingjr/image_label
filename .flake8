@@ -1,0 +1,3 @@
+[flake8]
+# lines too long - over 79
+ignore = E501
