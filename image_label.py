@@ -289,12 +289,14 @@ def process_file(filename):
                   COLORS[options.font_color],
                   font=font)
 
-    # add 'altered' to filename to prevent overwriting original
     if '.' in os.path.basename(filename):
+        # leave off the extension
         path, _ = os.path.splitext(filename)
-        outfilename = "{}.altered.{}".format(path, options.output_format)
     else:
-        outfilename = "{}.altered".format(path)
+        path = filename
+
+    # add 'altered' to filename to prevent overwriting original
+    outfilename = "{}.altered.{}".format(path, options.output_format.lower())
 
     # of BMP JPEG PNG only JPEG consumes the 'quality' parameter
     img.save(outfilename, format=options.output_format, quality=options.jpg_quality)
