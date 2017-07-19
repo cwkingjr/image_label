@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""App to add a label to one or more images"""
+"""App to add a label to one or more images. Optionally rotates image and converts output format."""
 
 # https://github.com/cwkingjr/image_label
 # License: MIT, see LICENSE file
@@ -16,7 +16,6 @@ from PIL import ImageStat
 
 CONFIG = configparser.ConfigParser()
 
-# acceptable location values
 # top, top right, right, bottom right, etc
 LOCATIONS = "T TR R BR B BL L TL".split()
 
@@ -28,7 +27,7 @@ LOCS_BOTTOM_EDGE = ('BL', 'B', 'BR')
 LOCS_LEFT_EDGE = ('TL', 'L', 'BL')
 LOCS_RIGHT_EDGE = ('TR', 'R', 'BR')
 
-# RGB values for colors
+# RGB values
 COLORS = {
     'red': (255, 0, 0),
     'blue': (0, 0, 255),
@@ -93,8 +92,13 @@ PARSER.add_argument('-O', '--output_format',
 
 ARGS, FILES = PARSER.parse_known_args()
 
-# get dict from Namespace object
-PARSED = vars(ARGS)
+
+def get_dict_from_namespace_object(args):
+    """Unwrap the namespace object to pull out a dict of values"""
+    return vars(args)
+
+
+PARSED = get_dict_from_namespace_object(ARGS)
 
 if 'IMAGE_LABEL_CONFIG' in os.environ:
     CONFIG.read(os.environ['IMAGE_LABEL_CONFIG'])
@@ -112,14 +116,14 @@ def options():
     pass
 
 
-# set the internal default config options
+# internal defaults
 options.font_color = 'red'
 options.font_file = './open-sans/OpenSans-Bold.ttf'
 options.font_size = 100
 options.label_location = 'TL'
 options.label_offset_TB = 50
 options.label_offset_LR = 50
-options.label_text = 'DEFAULT TEXT'
+options.label_text = 'LABEL TEXT'
 options.rotate = None
 options.jpg_quality = 93
 options.black_for_BW = False
@@ -127,7 +131,7 @@ options.output_format = 'JPEG'
 
 
 def load_settings_values(mydict):
-    """update settings from new dict"""
+    """update provided settings"""
 
     if 'font_color' in mydict:
         options.font_color = mydict['font_color']
@@ -153,13 +157,10 @@ def load_settings_values(mydict):
         options.output_format = mydict['output_format']
 
 
-# if the config file has a DEFAULTS section, override the internal
-# defaults with those settings
 if 'DEFAULTS' in CONFIG:
     load_settings_values(CONFIG['DEFAULTS'])
 
-# if setting option provided via CLI, override the current options
-# with the values from that section
+# if setting option provided via CLI, load that section's values
 if 'setting' in PARSED:
     MYSECTION = PARSED['setting']
     if MYSECTION in CONFIG:
@@ -168,7 +169,7 @@ if 'setting' in PARSED:
         print('ERROR: --setting value of {} is not included in the config'
               ' file'.format(MYSECTION))
 
-# override the current options with any additional CLI options
+# load any additional CLI options
 load_settings_values(PARSED)
 
 if options.font_color not in ACCEPTABLE_COLORS:
@@ -191,7 +192,6 @@ if not 1 <= options.jpg_quality <= 95:
           'and output jpg/jpeg file size')
     sys.exit(1)
 
-# make sure entries from setting file are correct and converted to bool
 if isinstance(options.black_for_BW, str):
     if options.black_for_BW == 'True':
         options.black_for_BW = True
@@ -207,11 +207,10 @@ if options.output_format not in OUTPUT_FORMATS:
           .format(options.output_format, OUTPUT_FORMATS))
     sys.exit(1)
 
-# test ttf file to make sure it's a ttf file using magic bytes
 TRUE_TYPE_FONT_MAGIC = b'\x00\x01\x00\x00'
 with open(options.font_file, 'rb') as f:
-    MAGIC_BYTES = f.read(4)
-    if MAGIC_BYTES != TRUE_TYPE_FONT_MAGIC:
+    FIRST_FOUR_BYTES = f.read(4)
+    if FIRST_FOUR_BYTES != TRUE_TYPE_FONT_MAGIC:
         print('The font file provided does not appear to be a True Type Font file')
         sys.exit(1)
 
@@ -221,7 +220,7 @@ with open(options.font_file, 'rb') as f:
 def is_black_and_white(myimg):
     """Determine if image is black and white based on color variance"""
 
-    # choosing 200 because I had some color images that only had ~500 v
+    # choosing 200 because I had some color images that only had ~500 variance
     color_variance_threshold = 200
 
     variance_tuple = ImageStat.Stat(myimg).var
@@ -279,8 +278,8 @@ def process_file(filename):
         y_coord = image_height - (text_height + options.label_offset_TB)
 
     if is_black_and_white(img):
-        # when the image is black and white, draw.text must provide a single color,
-        # not the 3-tuple RGB color, it will blow up
+        # when the image is black and white, draw.text needs a single color,
+        # not a 3-tuple RGB color
         if options.black_for_BW:
             bwcolor = 0
             bwcolortext = 'black'
