@@ -20,6 +20,14 @@ CONFIG = configparser.ConfigParser()
 # top, top right, right, bottom right, etc
 LOCATIONS = "T TR R BR B BL L TL".split()
 
+# used to calc x and y coords
+LOCS_TOP_OR_BOTTOM = ('T', 'B')
+LOCS_LEFT_OR_RIGHT = ('L', 'R')
+LOCS_TOP_EDGE = ('TL', 'T', 'TR')
+LOCS_BOTTOM_EDGE = ('BL', 'B', 'BR')
+LOCS_LEFT_EDGE = ('TL', 'L', 'BL')
+LOCS_RIGHT_EDGE = ('TR', 'R', 'BR')
+
 # RGB values for colors
 COLORS = {
     'red': (255, 0, 0),
@@ -255,19 +263,19 @@ def process_file(filename):
         sys.exit(1)
 
     # establish print location x
-    if options.label_location in ['TL', 'L', 'BL']:
+    if options.label_location in LOCS_LEFT_EDGE:
         x_coord = options.label_offset_LR
-    elif options.label_location in ['T', 'B']:
+    elif options.label_location in LOCS_TOP_OR_BOTTOM:
         x_coord = (image_width - text_width) / 2
-    elif options.label_location in ['TR', 'R', 'BR']:
+    elif options.label_location in LOCS_RIGHT_EDGE:
         x_coord = image_width - (text_width + options.label_offset_LR)
 
     # establish print location y
-    if options.label_location in ['TL', 'T', 'TR']:
+    if options.label_location in LOCS_TOP_EDGE:
         y_coord = options.label_offset_TB
-    elif options.label_location in ['L', 'R']:
+    elif options.label_location in LOCS_LEFT_OR_RIGHT:
         y_coord = (image_height - text_height) / 2
-    elif options.label_location in ['BL', 'B', 'BR']:
+    elif options.label_location in LOCS_BOTTOM_EDGE:
         y_coord = image_height - (text_height + options.label_offset_TB)
 
     if is_black_and_white(img):
