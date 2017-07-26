@@ -7,12 +7,15 @@
 import argparse
 import configparser
 import os
+from os.path import expanduser
 import sys
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 from PIL import ImageStat
 
+USER_HOME = expanduser("~")
+USER_HOME_CONFIG_FILE = "{}/{}".format(USER_HOME, '.image_label_config.ini')
 
 CONFIG = configparser.ConfigParser()
 
@@ -36,6 +39,7 @@ COLORS = {
     'black': (0, 0, 0),
     'white': (255, 255, 255)
 }
+
 ACCEPTABLE_COLORS = sorted(COLORS.keys())
 
 # http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
@@ -101,10 +105,13 @@ def get_dict_from_namespace_object(args):
 PARSED = get_dict_from_namespace_object(ARGS)
 
 if 'IMAGE_LABEL_CONFIG' in os.environ:
+    print('Reading config file from environment: IMAGE_LABEL_CONFIG')
     CONFIG.read(os.environ['IMAGE_LABEL_CONFIG'])
+elif os.access(USER_HOME_CONFIG_FILE, os.R_OK):
+    print('Reading config file from home directory')
+    CONFIG.read(USER_HOME_CONFIG_FILE)
 else:
-    print('Could not find environment variable of IMAGE_LABEL_CONFIG '
-          'so could not read config file')
+    print('Could not find/read config file from env location or home directory')
 
 if 'list_ini_sections' in PARSED:
     print(' '.join(sorted(CONFIG.sections())))

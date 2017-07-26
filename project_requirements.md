@@ -3,7 +3,7 @@ This is a project based on talking to a cell tower inspector (Josh) that has to 
 Moving forward, these are my assumptions:
 
 - Must be able to run on Windows 10
-- Must provide extensive install instructions
+- Must provide clear/complete install instructions
 - Should have configs for default settings
 - Should allow non-software-technical user to add/change configs
 - Should allow command-line override of default configs

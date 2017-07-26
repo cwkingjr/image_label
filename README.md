@@ -3,7 +3,7 @@ Application to add a label to one or more images.
 
 Optionally, the user may rotate the images and/or change the output file image format.
 
-See README.config.md and image_label_config.ini for examples of how to set up a config file for preset options.
+See README.config.md and .image_label_config.ini for examples of how to set up a config file for preset options.
 
 See help.output.txt for info on how to pass command line arguments.
 
@@ -29,13 +29,15 @@ Example invocations:
 
 The script looks in your environment for a variable named IMAGE_LABEL_CONFIG, where it expects to find the path to your config file.
 
-On Linux, you can set that up as a hidden file in your home directory by adding this to your .bash_profile:
+On Linux, you can do this by adding it to your .bash_profile:
 
-    export IMAGE_LABEL_CONFIG=~/.image_label_config.ini
+    export IMAGE_LABEL_CONFIG=/path/to/my/.image_label_config.ini
 
 When completed, make sure your terminal re-reads it by either closing and reopening your terminal or re-sourcing it like this:
 
     source .bash_profile
+
+If there is no environment setting found, the script will look for a .image_label_config.ini config file in your home directory and read that if found.
 
 The script was built and tested on Python 3.6. To get started, install python 3.6, download the code into a folder, then pip install the requirements.
 
