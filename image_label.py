@@ -66,7 +66,7 @@ PARSER.add_argument('-F', '--font_file',
                     help='Path to TTF font file to use to generate the text label.')
 PARSER.add_argument('-Z', '--font_size',
                     type=int,
-                    help='Integer: Font size of the label text.')
+                    help='Integer: Font size of the label text. This will be reduced as needed to ensure the text will fit within the picture and offsets.')
 PARSER.add_argument('-H', '--label_offset_LR',
                     type=int,
                     help='Integer: Pixels to offset the label from the left '
@@ -255,18 +255,26 @@ def process_file(filename):
 
     image_width, image_height = img.size
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype(options.font_file, int(options.font_size))
-    text_width, text_height = draw.textsize(options.label_text, font=font)
 
-    if options.label_offset_LR * 2 + text_width > image_width:
-        print('label_offset_LR * 2, plus text width is too large to fit on {}'
-              .format(filename))
-        sys.exit(1)
 
-    if options.label_offset_TB * 2 + text_height > image_height:
-        print('label_offset_TB * 2, plus text height is too large to fit on {}'
-              .format(filename))
-        sys.exit(1)
+    def get_text_width_height(myfont):
+        return draw.textsize(options.label_text, font=myfont)
+
+
+    def get_font_that_fits(fontsize):
+       
+        myfont = ImageFont.truetype(options.font_file, int(fontsize))
+        text_width, text_height = get_text_width_height(myfont)
+
+        if options.label_offset_LR * 2 + text_width < image_width and \
+           options.label_offset_TB * 2 + text_height < image_height:
+            return myfont
+        else:
+            return get_font_that_fits(fontsize - 1)
+
+
+    font = get_font_that_fits(options.font_size)
+    text_width, text_height = get_text_width_height(font)
 
     # establish print location x
     if options.label_location in LOCS_LEFT_EDGE:

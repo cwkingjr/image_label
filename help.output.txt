@@ -21,7 +21,9 @@ optional arguments:
                         Path to TTF font file to use to generate the text
                         label.
   -Z FONT_SIZE, --font_size FONT_SIZE
-                        Integer: Font size of the label text.
+                        Integer: Font size of the label text. This will be
+                        reduced as needed to ensure the text will fit within
+                        the picture and offsets.
   -H LABEL_OFFSET_LR, --label_offset_LR LABEL_OFFSET_LR
                         Integer: Pixels to offset the label from the left and
                         right of the image.
